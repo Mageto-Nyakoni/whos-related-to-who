@@ -139,8 +139,10 @@ Use these settings:
 ```text
 Runtime: Node
 Build Command: npm install && npm run build
-Start Command: node ./dist/server/entry.mjs
+Start Command: npm run start
 ```
+
+The `start` script runs the built Astro server and binds it to `0.0.0.0`, which Render requires for port detection.
 
 For persistent JSON storage on a paid Render service, add a persistent disk and set:
 
