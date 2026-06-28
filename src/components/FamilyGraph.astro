@@ -1,0 +1,68 @@
+---
+import FamilyGraphClient from './FamilyGraphClient';
+import type { FamilyDataset } from '../types/family';
+
+interface Props {
+  family: FamilyDataset;
+  familyId: string;
+}
+
+const { family, familyId } = Astro.props;
+---
+
+<FamilyGraphClient
+  client:only="solid-js"
+  familyName={family.metadata.familyName}
+  familyId={familyId}
+  people={family.people}
+>
+  <div slot="fallback" class="graph-loading">
+    <div class="graph-loading__card">
+      <p class="graph-loading__eyebrow">Preparing graph</p>
+      <h2>Loading the {family.metadata.familyName} family tree...</h2>
+      <p>The 3D view only renders in the browser after the client bundle loads.</p>
+    </div>
+  </div>
+</FamilyGraphClient>
+
+<style>
+  .graph-loading {
+    min-height: 70vh;
+    display: grid;
+    place-items: center;
+    border-radius: 10px;
+    background:
+      radial-gradient(circle at top, rgba(88, 113, 62, 0.18), transparent 38%),
+      linear-gradient(135deg, #151b14, #20160e 52%, #2a1d13);
+    border: 1px solid rgba(151, 121, 83, 0.28);
+    padding: 2rem;
+  }
+
+  .graph-loading__card {
+    width: min(100%, 32rem);
+    padding: 1.5rem;
+    border-radius: 10px;
+    background: rgba(24, 28, 20, 0.82);
+    border: 1px solid rgba(151, 121, 83, 0.26);
+    color: #f3e9d2;
+    box-shadow: 0 20px 50px rgba(10, 8, 5, 0.32);
+  }
+
+  .graph-loading__eyebrow {
+    margin: 0 0 0.5rem;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: #d4b794;
+  }
+
+  .graph-loading__card h2 {
+    margin: 0 0 0.5rem;
+    font-size: clamp(1.5rem, 4vw, 2rem);
+  }
+
+  .graph-loading__card p:last-child {
+    margin-bottom: 0;
+    color: #d6c7af;
+  }
+</style>

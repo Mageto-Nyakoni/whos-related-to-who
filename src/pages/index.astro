@@ -1,0 +1,184 @@
+---
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>Family Tree MVP</title>
+    <style>
+      :root {
+        color-scheme: dark;
+        font-family: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Georgia, serif;
+        background:
+          radial-gradient(circle at top, rgba(87, 114, 63, 0.2), transparent 30%),
+          linear-gradient(180deg, #0d130d 0%, #1b140d 100%);
+        color: #f3e9d2;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+      }
+
+      main {
+        min-height: 100vh;
+        display: grid;
+        place-items: center;
+        padding: 1.25rem;
+      }
+
+      .hero {
+        width: min(100%, 52rem);
+        padding: clamp(1.5rem, 4vw, 3rem);
+        border-radius: 10px;
+        background:
+          linear-gradient(180deg, rgba(23, 29, 21, 0.92), rgba(32, 23, 15, 0.82)),
+          rgba(23, 29, 21, 0.88);
+        border: 1px solid rgba(151, 121, 83, 0.2);
+        box-shadow: 0 30px 80px rgba(10, 8, 5, 0.42);
+      }
+
+      h1 {
+        margin: 0;
+        font-size: clamp(2.5rem, 7vw, 5.25rem);
+        line-height: 0.92;
+        letter-spacing: -0.04em;
+      }
+
+      .lede {
+        margin: 1rem 0 0;
+        max-width: 38rem;
+        color: #d8ccb7;
+        font-size: 1.05rem;
+        line-height: 1.7;
+      }
+
+      .access-form {
+        margin-top: 2rem;
+        display: grid;
+        gap: 0.9rem;
+      }
+
+      .access-form label {
+        font-size: 0.84rem;
+        text-transform: uppercase;
+        letter-spacing: 0.16em;
+        color: #ccb18b;
+      }
+
+      .access-row {
+        display: flex;
+        gap: 0.85rem;
+        align-items: stretch;
+        flex-wrap: wrap;
+      }
+
+      .access-form input {
+        flex: 1 1 20rem;
+        min-height: 3.4rem;
+        padding: 0.95rem 1.1rem;
+        border-radius: 8px;
+        border: 1px solid rgba(151, 121, 83, 0.26);
+        background: rgba(24, 28, 20, 0.76);
+        color: #f8f1e0;
+        font: inherit;
+        outline: none;
+        transition: border-color 160ms ease, box-shadow 160ms ease;
+      }
+
+      .access-form input:focus {
+        border-color: rgba(112, 142, 91, 0.7);
+        box-shadow: 0 0 0 4px rgba(79, 105, 60, 0.14);
+      }
+
+      .access-form button {
+        min-height: 3.4rem;
+        padding: 0.95rem 1.3rem;
+        border: 0;
+        border-radius: 8px;
+        background: linear-gradient(135deg, #6e8647, #506238);
+        color: #f8f1e0;
+        font: inherit;
+        font-weight: 700;
+        cursor: pointer;
+      }
+
+      .hint {
+        margin: 0;
+        color: #bca589;
+        font-size: 0.96rem;
+      }
+
+      .error {
+        margin: 0;
+        color: #e0b79a;
+        min-height: 1.4rem;
+      }
+
+      @media (max-width: 720px) {
+        .access-row {
+          flex-direction: column;
+        }
+
+        .access-form button {
+          width: 100%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <section class="hero">
+        <h1>Find your family tree.</h1>
+        <p class="lede">
+          Enter your family's unique code or last name to open the correct private family graph and
+          start exploring connections.
+        </p>
+
+        <form class="access-form" id="family-access-form">
+          <label for="family-code">Enter your family's unique code or last name.</label>
+          <div class="access-row">
+            <input
+              id="family-code"
+              name="familyCode"
+              type="text"
+              placeholder="Example: jones"
+              autocomplete="off"
+            />
+            <button type="submit">Open family tree</button>
+          </div>
+          <p class="hint">Example: entering <code>jones</code> opens <code>/family/jones</code>.</p>
+          <p class="error" id="family-access-error" role="status" aria-live="polite"></p>
+        </form>
+      </section>
+    </main>
+
+    <script>
+      const form = document.querySelector('#family-access-form');
+      const input = document.querySelector('#family-code');
+      const error = document.querySelector('#family-access-error');
+
+      if (form instanceof HTMLFormElement && input instanceof HTMLInputElement && error instanceof HTMLElement) {
+        form.addEventListener('submit', (event) => {
+          event.preventDefault();
+
+          const rawValue = input.value.trim();
+          if (!rawValue) {
+            error.textContent = 'Enter a family code or last name before continuing.';
+            input.focus();
+            return;
+          }
+
+          error.textContent = '';
+          const familyId = encodeURIComponent(rawValue.toLowerCase());
+          window.location.assign(`/family/${familyId}`);
+        });
+      }
+    </script>
+  </body>
+</html>

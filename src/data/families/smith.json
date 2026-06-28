@@ -1,0 +1,103 @@
+{
+  "metadata": {
+    "familyName": "Smith",
+    "accessPasswords": {
+      "viewer": "smith-view-2026",
+      "editor": "smith-edit-2026",
+      "admin": "smith-admin-2026"
+    }
+  },
+  "people": [
+    {
+      "id": "smith-p001",
+      "name": "Walter Smith",
+      "nuclearFamilyId": "smith-f001",
+      "dob": "1951-02-13",
+      "phone": "555-1101",
+      "color": "#486b41",
+      "relationships": {
+        "parents": [],
+        "children": ["smith-p003", "smith-p004"],
+        "partners": ["smith-p002"]
+      }
+    },
+    {
+      "id": "smith-p002",
+      "name": "Helen Smith",
+      "nuclearFamilyId": "smith-f001",
+      "dob": "1953-08-21",
+      "phone": "555-1102",
+      "color": "#8a6a49",
+      "relationships": {
+        "parents": [],
+        "children": ["smith-p003", "smith-p004"],
+        "partners": ["smith-p001"]
+      }
+    },
+    {
+      "id": "smith-p003",
+      "name": "Michael Smith",
+      "nuclearFamilyId": "smith-f002",
+      "dob": "1979-05-09",
+      "phone": "555-1103",
+      "color": "#5e7b4d",
+      "relationships": {
+        "parents": ["smith-p001", "smith-p002"],
+        "children": ["smith-p006"],
+        "partners": ["smith-p005"]
+      }
+    },
+    {
+      "id": "smith-p004",
+      "name": "Laura Smith",
+      "nuclearFamilyId": "smith-f003",
+      "dob": "1982-11-17",
+      "phone": "555-1104",
+      "color": "#7f593e",
+      "relationships": {
+        "parents": ["smith-p001", "smith-p002"],
+        "children": ["smith-p007"],
+        "partners": []
+      }
+    },
+    {
+      "id": "smith-p005",
+      "name": "Alicia Smith",
+      "nuclearFamilyId": "smith-f002",
+      "dob": "1981-01-28",
+      "phone": "555-1105",
+      "color": "#7f7d4e",
+      "relationships": {
+        "parents": [],
+        "children": ["smith-p006"],
+        "partners": ["smith-p003"]
+      }
+    },
+    {
+      "id": "smith-p006",
+      "name": "Noah Smith",
+      "nuclearFamilyId": "smith-f002",
+      "dob": "2010-06-14",
+      "phone": "555-1106",
+      "color": "#3e5d37",
+      "relationships": {
+        "parents": ["smith-p003", "smith-p005"],
+        "children": [],
+        "partners": []
+      }
+    },
+    {
+      "id": "smith-p007",
+      "name": "Olivia Carter",
+      "nuclearFamilyId": "smith-f003",
+      "dob": "2014-09-03",
+      "phone": "555-1107",
+      "color": "#976a52",
+      "relationships": {
+        "parents": ["smith-p004"],
+        "children": [],
+        "partners": []
+      }
+    }
+  ]
+}

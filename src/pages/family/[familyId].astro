@@ -1,0 +1,633 @@
+---
+import FamilyGraph from '../../components/FamilyGraph.astro';
+import { readFamilyDataset } from '../../lib/familyStore';
+
+export const prerender = false;
+
+const familyId = Astro.params.familyId;
+
+if (!familyId) {
+  return new Response('Family not found.', { status: 404 });
+}
+
+const family = await readFamilyDataset(familyId);
+
+if (!family) {
+  return new Response('Family not found.', { status: 404 });
+}
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>{family.metadata.familyName} Family Tree</title>
+    <style is:global>
+      :root {
+        color-scheme: dark;
+        font-family: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Georgia, serif;
+        background:
+          radial-gradient(circle at top, rgba(71, 95, 54, 0.22), transparent 32%),
+          linear-gradient(180deg, #0d130d 0%, #171109 100%);
+        color: #f3e9d2;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        overflow: hidden;
+      }
+
+      main {
+        width: 100%;
+        min-height: 100vh;
+      }
+
+      .family-graph-shell {
+        position: relative;
+        min-height: 100vh;
+      }
+
+      .family-title-panel,
+      .graph-search--overlay,
+      .graph-actions-panel,
+      .birthday-panel {
+        position: absolute;
+        z-index: 3;
+        backdrop-filter: blur(14px);
+        background: rgba(22, 28, 20, 0.72);
+        border: 1px solid rgba(151, 121, 83, 0.35);
+        box-shadow: 0 18px 45px rgba(10, 8, 5, 0.32);
+      }
+
+      .family-title-panel {
+        top: 1.25rem;
+        left: 1.25rem;
+        padding: 0.9rem 1.05rem;
+        border-radius: 10px;
+        max-width: min(24rem, calc(100vw - 8rem));
+      }
+
+      .family-title-panel h1 {
+        margin: 0.1rem 0 0;
+        font-size: clamp(1.7rem, 4vw, 3rem);
+        line-height: 0.94;
+        letter-spacing: -0.03em;
+      }
+
+      .graph-search {
+        display: flex;
+        gap: 0.6rem;
+        align-items: end;
+        flex-wrap: wrap;
+      }
+
+      .graph-search--overlay {
+        top: 1.25rem;
+        right: 1.25rem;
+        padding: 0.8rem;
+        border-radius: 10px;
+        width: min(22rem, calc(100vw - 2.5rem));
+      }
+
+      .graph-search__field {
+        display: grid;
+        gap: 0.4rem;
+        min-width: 0;
+        flex: 1 1 12rem;
+      }
+
+      .graph-search__label {
+        font-size: 0.72rem;
+        text-transform: uppercase;
+        letter-spacing: 0.16em;
+        color: #d6c2a4;
+      }
+
+      .graph-search__input {
+        width: 100%;
+        min-height: 2.7rem;
+        padding: 0.75rem 0.85rem;
+        border-radius: 8px;
+        border: 1px solid rgba(151, 121, 83, 0.35);
+        background: rgba(31, 35, 24, 0.88);
+        color: #f3e9d2;
+        font: inherit;
+        outline: none;
+        transition: border-color 160ms ease, box-shadow 160ms ease;
+      }
+
+      .graph-search__input:focus {
+        border-color: rgba(112, 142, 91, 0.82);
+        box-shadow: 0 0 0 3px rgba(79, 105, 60, 0.22);
+      }
+
+      .graph-search__button {
+        min-height: 2.7rem;
+        padding: 0.75rem 1rem;
+        border: 0;
+        border-radius: 8px;
+        background: linear-gradient(135deg, #6e8647, #506238);
+        color: #f8f1e0;
+        font: inherit;
+        font-weight: 700;
+        cursor: pointer;
+      }
+
+      .graph-search__error {
+        margin: 0;
+        width: 100%;
+        color: #e0b79a;
+        font-size: 0.9rem;
+      }
+
+      .graph-actions-panel {
+        left: 1.25rem;
+        bottom: 1.25rem;
+        display: grid;
+        gap: 0.55rem;
+        padding: 0.8rem;
+        border-radius: 10px;
+      }
+
+      .graph-actions-panel__label {
+        margin: 0;
+        font-size: 0.72rem;
+        text-transform: uppercase;
+        letter-spacing: 0.16em;
+        color: #d6c2a4;
+      }
+
+      .graph-actions-panel__button {
+        min-height: 2.7rem;
+        padding: 0.75rem 1rem;
+        border: 0;
+        border-radius: 8px;
+        background: linear-gradient(135deg, #6e8647, #506238);
+        color: #f8f1e0;
+        font: inherit;
+        font-weight: 700;
+        cursor: pointer;
+      }
+
+      .graph-actions-panel__button:disabled {
+        cursor: wait;
+        opacity: 0.68;
+      }
+
+      .graph-actions-panel__status {
+        margin: 0;
+        color: #d8ccb7;
+        font-size: 0.88rem;
+      }
+
+      .birthday-panel {
+        right: 1.25rem;
+        bottom: 1.25rem;
+        width: min(14.5rem, calc(100vw - 2.5rem));
+        padding: 0.65rem 0.75rem;
+        border-radius: 10px;
+      }
+
+      .birthday-panel__header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.75rem;
+      }
+
+      .birthday-panel__label {
+        margin: 0;
+        font-size: 0.72rem;
+        text-transform: uppercase;
+        letter-spacing: 0.16em;
+        color: #d6c2a4;
+      }
+
+      .birthday-panel__toggle {
+        width: 2rem;
+        height: 2rem;
+        display: grid;
+        place-items: center;
+        padding: 0;
+        border: 0;
+        border-radius: 8px;
+        background: linear-gradient(135deg, #6e8647, #506238);
+        color: #f8f1e0;
+        font: inherit;
+        font-size: 1rem;
+        cursor: pointer;
+      }
+
+      .birthday-panel__list {
+        list-style: none;
+        margin: 0.7rem 0 0;
+        padding: 0;
+        display: grid;
+        gap: 0.55rem;
+      }
+
+      .birthday-panel__body {
+        display: grid;
+        grid-template-rows: 0fr;
+        opacity: 0;
+        transform: translateY(-0.2rem);
+        transition:
+          grid-template-rows 260ms cubic-bezier(0.22, 1, 0.36, 1),
+          opacity 220ms ease,
+          transform 260ms cubic-bezier(0.22, 1, 0.36, 1);
+      }
+
+      .birthday-panel__body--expanded {
+        grid-template-rows: 1fr;
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      .birthday-panel__body-inner {
+        overflow: hidden;
+      }
+
+      .birthday-panel__item {
+        display: flex;
+        align-items: start;
+        justify-content: space-between;
+        gap: 0.75rem;
+        padding: 0.65rem 0.7rem;
+        border-radius: 8px;
+        background: rgba(33, 27, 18, 0.64);
+        border: 1px solid rgba(151, 121, 83, 0.18);
+      }
+
+      .birthday-panel__name,
+      .birthday-panel__date,
+      .birthday-panel__offset,
+      .birthday-panel__empty {
+        margin: 0;
+      }
+
+      .birthday-panel__name {
+        color: #f8f1e0;
+      }
+
+      .birthday-panel__date {
+        margin-top: 0.15rem;
+        color: #d8ccb7;
+        font-size: 0.92rem;
+      }
+
+      .birthday-panel__offset {
+        color: #ccb18b;
+        font-size: 0.9rem;
+        white-space: nowrap;
+      }
+
+      .birthday-panel__empty {
+        margin-top: 0.7rem;
+        color: #d8ccb7;
+      }
+
+      .eyebrow {
+        margin: 0;
+        text-transform: uppercase;
+        letter-spacing: 0.18em;
+        font-size: 0.75rem;
+        color: #cab08c;
+      }
+
+      .family-graph-stage {
+        position: absolute;
+        inset: 0;
+        overflow: hidden;
+        background:
+          radial-gradient(circle at top, rgba(65, 92, 55, 0.12), transparent 24%),
+          linear-gradient(180deg, rgba(16, 21, 15, 0.96), rgba(24, 18, 11, 0.92));
+      }
+
+      .graph-canvas {
+        width: 100%;
+        height: 100vh;
+      }
+
+      .graph-overlay {
+        position: absolute;
+        inset: 0;
+        display: grid;
+        place-items: center;
+        gap: 0.75rem;
+        background: linear-gradient(180deg, rgba(13, 19, 13, 0.16), rgba(13, 19, 13, 0.72));
+        z-index: 2;
+        pointer-events: none;
+        text-align: center;
+        color: #e6dac3;
+      }
+
+      .graph-spinner {
+        width: 3rem;
+        height: 3rem;
+        border-radius: 6px;
+        border: 3px solid rgba(141, 116, 80, 0.2);
+        border-top-color: #7d8f55;
+        animation: spin 0.85s linear infinite;
+      }
+
+      .person-dialog {
+        width: min(92vw, 30rem);
+        padding: 0;
+        border: 1px solid rgba(151, 121, 83, 0.35);
+        border-radius: 10px;
+        background: linear-gradient(180deg, #151b14, #22170f);
+        color: #f3e9d2;
+        box-shadow: 0 30px 80px rgba(10, 8, 5, 0.5);
+      }
+
+      .person-dialog::backdrop {
+        background: rgba(14, 17, 12, 0.72);
+        backdrop-filter: blur(8px);
+      }
+
+      .person-dialog--wide {
+        width: min(92vw, 42rem);
+      }
+
+      .person-dialog--wide[open] {
+        animation: dialog-rise 260ms cubic-bezier(0.22, 1, 0.36, 1);
+      }
+
+      .person-dialog--wide[open]::backdrop {
+        animation: dialog-backdrop-fade 220ms ease;
+      }
+
+      .person-dialog__content {
+        padding: 1.4rem;
+      }
+
+      .person-dialog--wide[open] .person-dialog__content {
+        animation: dialog-content-rise 320ms cubic-bezier(0.22, 1, 0.36, 1);
+      }
+
+      .person-dialog--wide.person-dialog--closing {
+        animation: dialog-fall 240ms cubic-bezier(0.4, 0, 1, 1) forwards;
+      }
+
+      .person-dialog--wide.person-dialog--closing::backdrop {
+        animation: dialog-backdrop-fade-out 220ms ease forwards;
+      }
+
+      .person-dialog--wide.person-dialog--closing .person-dialog__content {
+        animation: dialog-content-fall 220ms cubic-bezier(0.4, 0, 1, 1) forwards;
+      }
+
+      .person-dialog__note {
+        margin: 1rem 0 0;
+        color: #d8ccb7;
+        line-height: 1.55;
+      }
+
+      .person-dialog__header {
+        display: flex;
+        justify-content: space-between;
+        gap: 1rem;
+        align-items: start;
+      }
+
+      .person-dialog__actions {
+        display: flex;
+        gap: 0.55rem;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+      }
+
+      .person-dialog__eyebrow {
+        margin: 0 0 0.35rem;
+        text-transform: uppercase;
+        letter-spacing: 0.16em;
+        font-size: 0.74rem;
+        color: #cdb18d;
+      }
+
+      .person-dialog__header h2 {
+        margin: 0;
+        font-size: clamp(1.5rem, 4vw, 2.2rem);
+      }
+
+      .person-dialog__close {
+        min-height: 2.75rem;
+        padding: 0.7rem 1rem;
+        border-radius: 8px;
+        border: 1px solid rgba(151, 121, 83, 0.28);
+        background: rgba(55, 42, 28, 0.84);
+        color: #f3e9d2;
+        font: inherit;
+        cursor: pointer;
+      }
+
+      .person-dialog__details {
+        margin: 1.25rem 0 0;
+        display: grid;
+        gap: 0.9rem;
+      }
+
+      .person-dialog__details div {
+        padding: 0.95rem 1rem;
+        border-radius: 8px;
+        background: rgba(33, 27, 18, 0.64);
+        border: 1px solid rgba(151, 121, 83, 0.18);
+      }
+
+      .person-dialog__details dt {
+        margin: 0 0 0.35rem;
+        color: #c8b08f;
+        font-size: 0.85rem;
+      }
+
+      .person-dialog__details dd {
+        margin: 0;
+        font-size: 1rem;
+        color: #f8f1e0;
+      }
+
+      .add-node-grid {
+        margin-top: 1.25rem;
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.9rem;
+      }
+
+      .add-node-field {
+        display: grid;
+        gap: 0.35rem;
+      }
+
+      .add-node-field span {
+        font-size: 0.78rem;
+        text-transform: uppercase;
+        letter-spacing: 0.14em;
+        color: #ccb18b;
+      }
+
+      .add-node-field input,
+      .add-node-field select {
+        width: 100%;
+        min-height: 2.7rem;
+        padding: 0.75rem 0.85rem;
+        border-radius: 8px;
+        border: 1px solid rgba(151, 121, 83, 0.28);
+        background: rgba(31, 35, 24, 0.88);
+        color: #f8f1e0;
+        font: inherit;
+        outline: none;
+      }
+
+      .add-node-field input:focus,
+      .add-node-field select:focus {
+        border-color: rgba(112, 142, 91, 0.82);
+        box-shadow: 0 0 0 3px rgba(79, 105, 60, 0.22);
+      }
+
+      .add-node-field select {
+        min-height: 8.4rem;
+        padding-block: 0.4rem;
+      }
+
+      .add-node-field--full {
+        grid-column: 1 / -1;
+      }
+
+      .add-node-actions {
+        margin-top: 1rem;
+        display: flex;
+        justify-content: flex-end;
+      }
+
+      .person-edit-form {
+        margin-top: 1rem;
+      }
+
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      @keyframes dialog-rise {
+        from {
+          opacity: 0;
+          transform: translateY(0.9rem) scale(0.985);
+        }
+
+        to {
+          opacity: 1;
+          transform: translateY(0) scale(1);
+        }
+      }
+
+      @keyframes dialog-content-rise {
+        from {
+          opacity: 0;
+          transform: translateY(0.55rem);
+        }
+
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @keyframes dialog-fall {
+        from {
+          opacity: 1;
+          transform: translateY(0) scale(1);
+        }
+
+        to {
+          opacity: 0;
+          transform: translateY(0.7rem) scale(0.985);
+        }
+      }
+
+      @keyframes dialog-content-fall {
+        from {
+          opacity: 1;
+          transform: translateY(0);
+        }
+
+        to {
+          opacity: 0;
+          transform: translateY(0.4rem);
+        }
+      }
+
+      @keyframes dialog-backdrop-fade {
+        from {
+          opacity: 0;
+        }
+
+        to {
+          opacity: 1;
+        }
+      }
+
+      @keyframes dialog-backdrop-fade-out {
+        from {
+          opacity: 1;
+        }
+
+        to {
+          opacity: 0;
+        }
+      }
+
+      @media (max-width: 720px) {
+        .family-title-panel {
+          top: 0.75rem;
+          left: 0.75rem;
+          right: 0.75rem;
+          max-width: none;
+        }
+
+        .graph-search--overlay {
+          top: auto;
+          right: 0.75rem;
+          left: 0.75rem;
+          bottom: 4.9rem;
+          width: auto;
+        }
+
+        .graph-search {
+          align-items: stretch;
+        }
+
+        .graph-actions-panel {
+          left: 0.75rem;
+          right: 0.75rem;
+          bottom: 0.75rem;
+        }
+
+        .birthday-panel {
+          right: 0.75rem;
+          left: 0.75rem;
+          bottom: 5.9rem;
+          width: auto;
+        }
+
+        .add-node-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .person-dialog__header {
+          flex-direction: column;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <FamilyGraph family={family} familyId={familyId} />
+    </main>
+  </body>
+</html>

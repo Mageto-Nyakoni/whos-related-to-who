@@ -1,0 +1,103 @@
+{
+  "metadata": {
+    "familyName": "Jones",
+    "accessPasswords": {
+      "viewer": "jones-view-2026",
+      "editor": "jones-edit-2026",
+      "admin": "jones-admin-2026"
+    }
+  },
+  "people": [
+    {
+      "id": "jones-p001",
+      "name": "Harold Jones",
+      "nuclearFamilyId": "jones-f001",
+      "dob": "1949-04-02",
+      "phone": "555-2201",
+      "color": "#476540",
+      "relationships": {
+        "parents": [],
+        "children": ["jones-p003", "jones-p004"],
+        "partners": ["jones-p002"]
+      }
+    },
+    {
+      "id": "jones-p002",
+      "name": "Denise Jones",
+      "nuclearFamilyId": "jones-f001",
+      "dob": "1952-12-10",
+      "phone": "555-2202",
+      "color": "#866243",
+      "relationships": {
+        "parents": [],
+        "children": ["jones-p003", "jones-p004"],
+        "partners": ["jones-p001"]
+      }
+    },
+    {
+      "id": "jones-p003",
+      "name": "Rachel Jones",
+      "nuclearFamilyId": "jones-f002",
+      "dob": "1978-03-26",
+      "phone": "555-2203",
+      "color": "#61794c",
+      "relationships": {
+        "parents": ["jones-p001", "jones-p002"],
+        "children": ["jones-p006"],
+        "partners": ["jones-p005"]
+      }
+    },
+    {
+      "id": "jones-p004",
+      "name": "Peter Jones",
+      "nuclearFamilyId": "jones-f003",
+      "dob": "1984-07-19",
+      "phone": "555-2204",
+      "color": "#7d5538",
+      "relationships": {
+        "parents": ["jones-p001", "jones-p002"],
+        "children": ["jones-p007"],
+        "partners": []
+      }
+    },
+    {
+      "id": "jones-p005",
+      "name": "Marcus Lee",
+      "nuclearFamilyId": "jones-f002",
+      "dob": "1977-10-08",
+      "phone": "555-2205",
+      "color": "#8a754f",
+      "relationships": {
+        "parents": [],
+        "children": ["jones-p006"],
+        "partners": ["jones-p003"]
+      }
+    },
+    {
+      "id": "jones-p006",
+      "name": "Chloe Lee",
+      "nuclearFamilyId": "jones-f002",
+      "dob": "2009-05-30",
+      "phone": "555-2206",
+      "color": "#3f5d39",
+      "relationships": {
+        "parents": ["jones-p003", "jones-p005"],
+        "children": [],
+        "partners": []
+      }
+    },
+    {
+      "id": "jones-p007",
+      "name": "Mason Jones",
+      "nuclearFamilyId": "jones-f003",
+      "dob": "2016-01-11",
+      "phone": "555-2207",
+      "color": "#9a6f52",
+      "relationships": {
+        "parents": ["jones-p004"],
+        "children": [],
+        "partners": []
+      }
+    }
+  ]
+}

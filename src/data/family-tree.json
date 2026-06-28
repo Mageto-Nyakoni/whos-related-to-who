@@ -1,0 +1,264 @@
+{
+  "people": [
+    {
+      "id": "p001",
+      "name": "Robert Carter",
+      "nuclearFamilyId": "f001",
+      "dob": "1948-03-12",
+      "phone": "555-0101",
+      "color": "#45633f",
+      "relationships": {
+        "parents": [],
+        "children": ["p003", "p004", "p005"],
+        "partners": ["p002"]
+      }
+    },
+    {
+      "id": "p002",
+      "name": "Evelyn Carter",
+      "nuclearFamilyId": "f001",
+      "dob": "1950-07-29",
+      "phone": "555-0102",
+      "color": "#826345",
+      "relationships": {
+        "parents": [],
+        "children": ["p003", "p004", "p005"],
+        "partners": ["p001"]
+      }
+    },
+    {
+      "id": "p003",
+      "name": "Daniel Carter",
+      "nuclearFamilyId": "f002",
+      "dob": "1974-11-08",
+      "phone": "555-0103",
+      "color": "#597447",
+      "relationships": {
+        "parents": ["p001", "p002"],
+        "children": ["p007", "p008"],
+        "partners": ["p006"]
+      }
+    },
+    {
+      "id": "p004",
+      "name": "Grace Nguyen",
+      "nuclearFamilyId": "f003",
+      "dob": "1978-02-16",
+      "phone": "555-0104",
+      "color": "#78563c",
+      "relationships": {
+        "parents": ["p001", "p002"],
+        "children": ["p010", "p011"],
+        "partners": ["p009"]
+      }
+    },
+    {
+      "id": "p005",
+      "name": "Lucas Carter",
+      "nuclearFamilyId": "f004",
+      "dob": "1983-09-21",
+      "phone": "555-0105",
+      "color": "#93704c",
+      "relationships": {
+        "parents": ["p001", "p002"],
+        "children": ["p013"],
+        "partners": ["p012"]
+      }
+    },
+    {
+      "id": "p006",
+      "name": "Priya Carter",
+      "nuclearFamilyId": "f002",
+      "dob": "1976-05-30",
+      "phone": "555-0106",
+      "color": "#6b7d51",
+      "relationships": {
+        "parents": ["p016", "p017"],
+        "children": ["p007", "p008"],
+        "partners": ["p003"]
+      }
+    },
+    {
+      "id": "p007",
+      "name": "Ava Carter",
+      "nuclearFamilyId": "f007",
+      "dob": "2002-01-14",
+      "phone": "555-0107",
+      "color": "#5a6941",
+      "relationships": {
+        "parents": ["p003", "p006"],
+        "children": ["p015"],
+        "partners": ["p014"]
+      }
+    },
+    {
+      "id": "p008",
+      "name": "Mason Carter",
+      "nuclearFamilyId": "f002",
+      "dob": "2005-08-19",
+      "phone": "555-0108",
+      "color": "#3d5937",
+      "relationships": {
+        "parents": ["p003", "p006"],
+        "children": [],
+        "partners": []
+      }
+    },
+    {
+      "id": "p009",
+      "name": "Minh Nguyen",
+      "nuclearFamilyId": "f003",
+      "dob": "1977-12-04",
+      "phone": "555-0109",
+      "color": "#876144",
+      "relationships": {
+        "parents": [],
+        "children": ["p010", "p011"],
+        "partners": ["p004"]
+      }
+    },
+    {
+      "id": "p010",
+      "name": "Ethan Nguyen",
+      "nuclearFamilyId": "f003",
+      "dob": "2008-04-23",
+      "phone": "555-0110",
+      "color": "#4b6a3e",
+      "relationships": {
+        "parents": ["p004", "p009"],
+        "children": [],
+        "partners": []
+      }
+    },
+    {
+      "id": "p011",
+      "name": "Lily Nguyen",
+      "nuclearFamilyId": "f003",
+      "dob": "2012-10-02",
+      "phone": "555-0111",
+      "color": "#9b7355",
+      "relationships": {
+        "parents": ["p004", "p009"],
+        "children": [],
+        "partners": []
+      }
+    },
+    {
+      "id": "p012",
+      "name": "Hannah Carter",
+      "nuclearFamilyId": "f004",
+      "dob": "1984-06-11",
+      "phone": "555-0112",
+      "color": "#81684c",
+      "relationships": {
+        "parents": [],
+        "children": ["p013"],
+        "partners": ["p005"]
+      }
+    },
+    {
+      "id": "p013",
+      "name": "Nora Carter",
+      "nuclearFamilyId": "f004",
+      "dob": "2011-03-07",
+      "phone": "555-0113",
+      "color": "#5d7643",
+      "relationships": {
+        "parents": ["p005", "p012"],
+        "children": [],
+        "partners": []
+      }
+    },
+    {
+      "id": "p014",
+      "name": "Jordan Lee",
+      "nuclearFamilyId": "f007",
+      "dob": "2001-11-27",
+      "phone": "555-0114",
+      "color": "#6f5239",
+      "relationships": {
+        "parents": [],
+        "children": ["p015"],
+        "partners": ["p007"]
+      }
+    },
+    {
+      "id": "p015",
+      "name": "Sophie Lee",
+      "nuclearFamilyId": "f007",
+      "dob": "2024-09-05",
+      "phone": "555-0115",
+      "color": "#9d7758",
+      "relationships": {
+        "parents": ["p007", "p014"],
+        "children": [],
+        "partners": []
+      }
+    },
+    {
+      "id": "p016",
+      "name": "Ravi Patel",
+      "nuclearFamilyId": "f005",
+      "dob": "1952-01-09",
+      "phone": "555-0116",
+      "color": "#47643f",
+      "relationships": {
+        "parents": [],
+        "children": ["p006", "p018"],
+        "partners": ["p017"]
+      }
+    },
+    {
+      "id": "p017",
+      "name": "Anika Patel",
+      "nuclearFamilyId": "f005",
+      "dob": "1954-04-18",
+      "phone": "555-0117",
+      "color": "#8a6747",
+      "relationships": {
+        "parents": [],
+        "children": ["p006", "p018"],
+        "partners": ["p016"]
+      }
+    },
+    {
+      "id": "p018",
+      "name": "Omar Patel",
+      "nuclearFamilyId": "f006",
+      "dob": "1980-07-03",
+      "phone": "555-0118",
+      "color": "#698150",
+      "relationships": {
+        "parents": ["p016", "p017"],
+        "children": ["p020"],
+        "partners": ["p019"]
+      }
+    },
+    {
+      "id": "p019",
+      "name": "Claire Patel",
+      "nuclearFamilyId": "f006",
+      "dob": "1982-02-25",
+      "phone": "555-0119",
+      "color": "#7f5f45",
+      "relationships": {
+        "parents": [],
+        "children": ["p020"],
+        "partners": ["p018"]
+      }
+    },
+    {
+      "id": "p020",
+      "name": "Mia Patel",
+      "nuclearFamilyId": "f006",
+      "dob": "2010-12-15",
+      "phone": "555-0120",
+      "color": "#4b6740",
+      "relationships": {
+        "parents": ["p018", "p019"],
+        "children": [],
+        "partners": []
+      }
+    }
+  ]
+}
