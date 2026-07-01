@@ -9,6 +9,7 @@ An Astro and Solid family tree MVP with a 3D force graph visualization, editable
 - Editable person nodes with parent, child, and partner relationships
 - Optional birthdays and upcoming birthday summary
 - Family-specific JSON data files
+- New family graph creation from the landing page
 - Astro server API for reading and writing family data
 
 ## Tech Stack
@@ -82,9 +83,12 @@ npm run preview
 The app uses a writable API route:
 
 ```text
+POST /api/families.json
 GET /api/families/[familyId].json
 PUT /api/families/[familyId].json
 ```
+
+`POST /api/families.json` creates a new empty family graph. The per-family `GET` and `PUT` routes load and persist each graph after it exists.
 
 The API reads and writes JSON files through `src/lib/familyStore.ts`. By default, files are stored in:
 

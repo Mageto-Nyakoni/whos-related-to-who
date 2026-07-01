@@ -64,6 +64,12 @@
         gap: 0.9rem;
       }
 
+      .access-form + .access-form {
+        margin-top: 1.5rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid rgba(151, 121, 83, 0.18);
+      }
+
       .access-form label {
         font-size: 0.84rem;
         text-transform: uppercase;
@@ -76,6 +82,12 @@
         gap: 0.85rem;
         align-items: stretch;
         flex-wrap: wrap;
+      }
+
+      .create-row {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.85rem;
       }
 
       .access-form input {
@@ -114,15 +126,21 @@
         font-size: 0.96rem;
       }
 
-      .error {
+      .status {
         margin: 0;
-        color: #e0b79a;
+        color: #bca589;
         min-height: 1.4rem;
       }
 
+      .status[data-state='error'] {
+        color: #e0b79a;
+      }
+
       @media (max-width: 720px) {
+        .create-row,
         .access-row {
-          flex-direction: column;
+          display: grid;
+          grid-template-columns: 1fr;
         }
 
         .access-form button {
@@ -153,30 +171,118 @@
             <button type="submit">Open family tree</button>
           </div>
           <p class="hint">Example: entering <code>jones</code> opens <code>/family/jones</code>.</p>
-          <p class="error" id="family-access-error" role="status" aria-live="polite"></p>
+          <p class="status" id="family-access-status" role="status" aria-live="polite"></p>
+        </form>
+
+        <form class="access-form" id="family-create-form">
+          <label for="family-name">Create a new family graph.</label>
+          <div class="create-row">
+            <input
+              id="family-name"
+              name="familyName"
+              type="text"
+              placeholder="Family name"
+              autocomplete="organization"
+              required
+            />
+            <input
+              id="family-new-code"
+              name="familyCode"
+              type="text"
+              placeholder="Unique code, optional"
+              autocomplete="off"
+            />
+          </div>
+          <button type="submit">Create family graph</button>
+          <p class="hint">If no code is entered, one is generated from the family name.</p>
+          <p class="status" id="family-create-status" role="status" aria-live="polite"></p>
         </form>
       </section>
     </main>
 
     <script>
-      const form = document.querySelector('#family-access-form');
-      const input = document.querySelector('#family-code');
-      const error = document.querySelector('#family-access-error');
+      const normalizeFamilyCode = (value) =>
+        value
+          .trim()
+          .toLowerCase()
+          .replace(/[^a-z0-9]+/g, '-')
+          .replace(/^-+|-+$/g, '');
 
-      if (form instanceof HTMLFormElement && input instanceof HTMLInputElement && error instanceof HTMLElement) {
-        form.addEventListener('submit', (event) => {
+      const accessForm = document.querySelector('#family-access-form');
+      const accessInput = document.querySelector('#family-code');
+      const accessStatus = document.querySelector('#family-access-status');
+      const createForm = document.querySelector('#family-create-form');
+      const createNameInput = document.querySelector('#family-name');
+      const createCodeInput = document.querySelector('#family-new-code');
+      const createStatus = document.querySelector('#family-create-status');
+
+      const setStatus = (element, message, state = '') => {
+        element.textContent = message;
+        element.dataset.state = state;
+      };
+
+      if (
+        accessForm instanceof HTMLFormElement &&
+        accessInput instanceof HTMLInputElement &&
+        accessStatus instanceof HTMLElement
+      ) {
+        accessForm.addEventListener('submit', (event) => {
           event.preventDefault();
 
-          const rawValue = input.value.trim();
-          if (!rawValue) {
-            error.textContent = 'Enter a family code or last name before continuing.';
-            input.focus();
+          const familyId = normalizeFamilyCode(accessInput.value);
+          if (!familyId) {
+            setStatus(accessStatus, 'Enter a family code or last name before continuing.', 'error');
+            accessInput.focus();
             return;
           }
 
-          error.textContent = '';
-          const familyId = encodeURIComponent(rawValue.toLowerCase());
+          setStatus(accessStatus, '');
           window.location.assign(`/family/${familyId}`);
+        });
+      }
+
+      if (
+        createForm instanceof HTMLFormElement &&
+        createNameInput instanceof HTMLInputElement &&
+        createCodeInput instanceof HTMLInputElement &&
+        createStatus instanceof HTMLElement
+      ) {
+        createForm.addEventListener('submit', async (event) => {
+          event.preventDefault();
+
+          const familyName = createNameInput.value.trim();
+          const familyId = normalizeFamilyCode(createCodeInput.value || familyName);
+
+          if (!familyName || !familyId) {
+            setStatus(createStatus, 'Enter a family name before creating a graph.', 'error');
+            createNameInput.focus();
+            return;
+          }
+
+          setStatus(createStatus, 'Creating graph...');
+
+          try {
+            const response = await fetch('/api/families.json', {
+              method: 'POST',
+              headers: {
+                'content-type': 'application/json'
+              },
+              body: JSON.stringify({ familyId, familyName })
+            });
+            const payload = await response.json().catch(() => null);
+
+            if (!response.ok || !payload?.familyId) {
+              throw new Error(payload?.error || 'The family graph could not be created.');
+            }
+
+            window.location.assign(`/family/${payload.familyId}`);
+          } catch (error) {
+            setStatus(
+              createStatus,
+              error instanceof Error ? error.message : 'The family graph could not be created.',
+              'error'
+            );
+          }
         });
       }
     </script>
