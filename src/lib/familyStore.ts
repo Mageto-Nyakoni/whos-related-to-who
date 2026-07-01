@@ -1,4 +1,4 @@
-import { mkdir, readFile, writeFile } from 'node:fs/promises';
+import { mkdir, readFile, rename, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import type { FamilyDataset, Person } from '../types/family';
 
@@ -10,7 +10,8 @@ export type PublicFamilyDataset = {
 };
 
 const FAMILY_ID_PATTERN = /^[a-z0-9-]+$/i;
-const FAMILIES_DIR = process.env.FAMILIES_DATA_DIR ?? path.join(process.cwd(), 'src', 'data', 'families');
+const SEED_FAMILIES_DIR = path.join(process.cwd(), 'src', 'data', 'families');
+const FAMILIES_DIR = process.env.FAMILIES_DATA_DIR ?? SEED_FAMILIES_DIR;
 
 export function isValidFamilyId(familyId: string) {
   return FAMILY_ID_PATTERN.test(familyId);
@@ -27,6 +28,11 @@ function getFamilyFilePath(familyId: string) {
   return path.join(FAMILIES_DIR, `${familyId}.json`);
 }
 
+function getSeedFamilyFilePath(familyId: string) {
+  assertValidFamilyId(familyId);
+  return path.join(SEED_FAMILIES_DIR, `${familyId}.json`);
+}
+
 function toPublicFamilyDataset(family: FamilyDataset): PublicFamilyDataset {
   return {
     metadata: {
@@ -36,11 +42,9 @@ function toPublicFamilyDataset(family: FamilyDataset): PublicFamilyDataset {
   };
 }
 
-export async function readFamilyDataset(familyId: string): Promise<FamilyDataset | null> {
-  if (!isValidFamilyId(familyId)) return null;
-
+async function readJsonFamilyFile(filePath: string): Promise<FamilyDataset | null> {
   try {
-    const file = await readFile(getFamilyFilePath(familyId), 'utf8');
+    const file = await readFile(filePath, 'utf8');
     return JSON.parse(file) as FamilyDataset;
   } catch (error) {
     if (error instanceof Error && 'code' in error && error.code === 'ENOENT') {
@@ -49,6 +53,32 @@ export async function readFamilyDataset(familyId: string): Promise<FamilyDataset
 
     throw error;
   }
+}
+
+async function writeJsonFamilyFile(filePath: string, family: FamilyDataset) {
+  await mkdir(path.dirname(filePath), { recursive: true });
+
+  const tempFilePath = `${filePath}.${process.pid}.${Date.now()}.tmp`;
+  await writeFile(tempFilePath, `${JSON.stringify(family, null, 2)}\n`, 'utf8');
+  await rename(tempFilePath, filePath);
+}
+
+export async function readFamilyDataset(familyId: string): Promise<FamilyDataset | null> {
+  if (!isValidFamilyId(familyId)) return null;
+
+  const familyFilePath = getFamilyFilePath(familyId);
+  const family = await readJsonFamilyFile(familyFilePath);
+  if (family) return family;
+
+  if (FAMILIES_DIR !== SEED_FAMILIES_DIR) {
+    const seedFamily = await readJsonFamilyFile(getSeedFamilyFilePath(familyId));
+    if (!seedFamily) return null;
+
+    await writeJsonFamilyFile(familyFilePath, seedFamily);
+    return seedFamily;
+  }
+
+  return null;
 }
 
 export async function readPublicFamilyDataset(familyId: string): Promise<PublicFamilyDataset | null> {
@@ -67,8 +97,7 @@ export async function writeFamilyPeople(familyId: string, people: Person[]): Pro
     people
   };
 
-  await mkdir(FAMILIES_DIR, { recursive: true });
-  await writeFile(getFamilyFilePath(familyId), `${JSON.stringify(nextFamily, null, 2)}\n`, 'utf8');
+  await writeJsonFamilyFile(getFamilyFilePath(familyId), nextFamily);
 
   return toPublicFamilyDataset(nextFamily);
 }

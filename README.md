@@ -92,13 +92,13 @@ The API reads and writes JSON files through `src/lib/familyStore.ts`. By default
 src/data/families/
 ```
 
-For production, set `FAMILIES_DATA_DIR` to a writable directory:
+For production, set `FAMILIES_DATA_DIR` to a writable directory. If that directory is empty, the app seeds it from the committed files in `src/data/families/` the first time a family is requested.
 
 ```bash
 FAMILIES_DATA_DIR=/var/data/families node ./dist/server/entry.mjs
 ```
 
-The API preserves each file's metadata and only updates the `people` array when users edit the graph.
+The API preserves each file's metadata and only updates the `people` array when users edit the graph. Writes are performed through a temporary file and rename so a failed write is less likely to leave a half-written JSON file.
 
 ## Family Data Shape
 
@@ -150,7 +150,7 @@ For persistent JSON storage on a paid Render service, add a persistent disk and 
 FAMILIES_DATA_DIR=/var/data/families
 ```
 
-Render's free web services have an ephemeral filesystem, so JSON edits are not durable on the free tier. For free persistent storage, move the data layer to an external database such as Supabase or Neon and keep Render as the web/API host.
+Render's free web services have an ephemeral filesystem, so JSON edits can persist while the instance is running but are not durable across restarts, redeploys, or instance replacement. For free durable persistence, move the data layer to an external database such as Supabase or Neon and keep Render as the web/API host.
 
 ## Notes
 
